@@ -11,7 +11,7 @@ import cors from 'cors'
 
 const app=express()
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://cine-stream-4q9u.vercel.app'],
+  origin: [ 'https://cine-stream-4q9u.vercel.app'],
   credentials: true
 }));
 
