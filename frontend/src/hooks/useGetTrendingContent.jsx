@@ -9,7 +9,7 @@ const useGetTrendingContent = () => {
     useEffect(() => {
         const getTrendingContent = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/v1/${contentType}/trending`, {
+                const response = await axios.get(`https://cinestream-kk16.onrender.com/api/v1/${contentType}/trending`, {
                     withCredentials: true,
                 })
                 setTrendingContent(response.data.content)
