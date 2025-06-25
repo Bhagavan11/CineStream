@@ -11,9 +11,10 @@ import cors from 'cors'
 
 const app=express()
 app.use(cors({
-  origin: 'http://localhost:5173', // allow Vite frontend
-  credentials: true                // if you're using cookies/session
-}))
+  origin: ['http://localhost:5173', 'https://cine-stream-4q9u.vercel.app'],
+  credentials: true
+}));
+
 
 import { protectRoute } from "./middleware/protectRoute.js"
 
