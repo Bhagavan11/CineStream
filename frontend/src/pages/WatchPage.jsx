@@ -19,15 +19,14 @@ const WatchPage = () => {
 	const { contentType } = useContentStore();
 
 	const sliderRef = useRef(null);
+	const BASE_URL = "https://cinestream-kk16.onrender.com";
 
 	useEffect(() => {
 		const getTrailers = async () => {
 			try {
-				console.log(id )
-				const res = await axios.get(`http://localhost:5000/api/v1/${contentType}/${id}/trailers`, {
+				const res = await axios.get(`${BASE_URL}/api/v1/${contentType}/${id}/trailers`, {
 					withCredentials: true,
 				});
-				console.log(res)
 				setTrailers(res.data.content);
 			} catch (error) {
 				if (error.message.includes("404")) {
@@ -35,36 +34,32 @@ const WatchPage = () => {
 				}
 			}
 		};
-
 		getTrailers();
 	}, [contentType, id]);
 
 	useEffect(() => {
-	const getSimilarContent = async () => {
-		try {
-			const res = await axios.get(`http://localhost:5000/api/v1/${contentType}/${id}/similar`, {
-				withCredentials: true,
-			});
-			setSimilarContent(res.data.similar);
-			console.log(res);
-		} catch (error) {
-			if (error.message.includes("404")) {
-				setSimilarContent([]);
+		const getSimilarContent = async () => {
+			try {
+				const res = await axios.get(`${BASE_URL}/api/v1/${contentType}/${id}/similar`, {
+					withCredentials: true,
+				});
+				setSimilarContent(res.data.similar);
+			} catch (error) {
+				if (error.message.includes("404")) {
+					setSimilarContent([]);
+				}
 			}
-		}
-	};
-
-	getSimilarContent();
-}, [contentType, id]);
+		};
+		getSimilarContent();
+	}, [contentType, id]);
 
 	useEffect(() => {
 		const getContentDetails = async () => {
 			try {
-				const res = await axios.get(`http://localhost:5000/api/v1/${contentType}/${id}/details`, {
-				withCredentials: true,
-			});
+				const res = await axios.get(`${BASE_URL}/api/v1/${contentType}/${id}/details`, {
+					withCredentials: true,
+				});
 				setContent(res.data.content);
-				console.log(res)
 			} catch (error) {
 				if (error.message.includes("404")) {
 					setContent(null);
@@ -73,7 +68,6 @@ const WatchPage = () => {
 				setLoading(false);
 			}
 		};
-
 		getContentDetails();
 	}, [contentType, id]);
 
@@ -120,9 +114,8 @@ const WatchPage = () => {
 					<div className='flex justify-between items-center mb-4'>
 						<button
 							className={`
-							bg-gray-500/70 hover:bg-gray-500 text-white py-2 px-4 rounded ${
-								currentTrailerIdx === 0 ? "opacity-50 cursor-not-allowed " : ""
-							}}
+								bg-gray-500/70 hover:bg-gray-500 text-white py-2 px-4 rounded 
+								${currentTrailerIdx === 0 ? "opacity-50 cursor-not-allowed" : ""}
 							`}
 							disabled={currentTrailerIdx === 0}
 							onClick={handlePrev}
@@ -132,9 +125,8 @@ const WatchPage = () => {
 
 						<button
 							className={`
-							bg-gray-500/70 hover:bg-gray-500 text-white py-2 px-4 rounded ${
-								currentTrailerIdx === trailers.length - 1 ? "opacity-50 cursor-not-allowed " : ""
-							}}
+								bg-gray-500/70 hover:bg-gray-500 text-white py-2 px-4 rounded 
+								${currentTrailerIdx === trailers.length - 1 ? "opacity-50 cursor-not-allowed" : ""}
 							`}
 							disabled={currentTrailerIdx === trailers.length - 1}
 							onClick={handleNext}
@@ -145,7 +137,7 @@ const WatchPage = () => {
 				)}
 
 				<div className='aspect-video mb-8 p-2 sm:px-10 md:px-32'>
-					{trailers.length > 0 && (
+					{trailers.length > 0 ? (
 						<ReactPlayer
 							controls={true}
 							width={"100%"}
@@ -153,9 +145,7 @@ const WatchPage = () => {
 							className='mx-auto overflow-hidden rounded-lg'
 							url={`https://www.youtube.com/watch?v=${trailers[currentTrailerIdx].key}`}
 						/>
-					)}
-
-					{trailers?.length === 0 && (
+					) : (
 						<h2 className='text-xl text-center mt-5'>
 							No trailers available for{" "}
 							<span className='font-bold text-red-600'>{content?.title || content?.name}</span> 😥
@@ -163,43 +153,38 @@ const WatchPage = () => {
 					)}
 				</div>
 
-				{/* movie details */}
-				<div
-					className='flex flex-col md:flex-row items-center justify-between gap-20 
-				max-w-6xl mx-auto'
-				>
+				<div className='flex flex-col md:flex-row items-center justify-between gap-20 max-w-6xl mx-auto'>
 					<div className='mb-4 md:mb-0'>
-						<h2 className='text-5xl font-bold text-balance'>{content?.title || content?.name}</h2>
-
+						<h2 className='text-5xl font-bold'>{content?.title || content?.name}</h2>
 						<p className='mt-2 text-lg'>
 							{formatReleaseDate(content?.release_date || content?.first_air_date)} |{" "}
 							{content?.adult ? (
 								<span className='text-red-600'>18+</span>
 							) : (
 								<span className='text-green-600'>PG-13</span>
-							)}{" "}
+							)}
 						</p>
 						<p className='mt-4 text-lg'>{content?.overview}</p>
 					</div>
 					<img
 						src={ORIGINAL_IMG_BASE_URL + content?.poster_path}
-						alt='Poster image'
+						alt='Poster'
 						className='max-h-[600px] rounded-md'
 					/>
 				</div>
 
 				{similarContent.length > 0 && (
 					<div className='mt-12 max-w-5xl mx-auto relative'>
-						<h3 className='text-3xl font-bold mb-4'>Similar Movies/Tv Show</h3>
+						<h3 className='text-3xl font-bold mb-4'>Similar Movies/TV Shows</h3>
 
-						<div className='flex overflow-x-scroll no-scrollbar scrollbar-hide gap-4 pb-4 group' ref={sliderRef}>
+						<div className='flex overflow-x-scroll no-scrollbar gap-4 pb-4 group' ref={sliderRef}>
 							{similarContent.map((content) => {
-								if (content.poster_path === null) return null;
+								if (!content.poster_path) return null;
 								return (
 									<Link key={content.id} to={`/watch/${content.id}`} className='w-52 flex-none'>
 										<img
 											src={SMALL_IMG_BASE_URL + content.poster_path}
-											alt='Poster path'
+											alt='Poster'
 											className='w-full h-auto rounded-md'
 										/>
 										<h4 className='mt-2 text-lg font-semibold'>{content.title || content.name}</h4>
@@ -209,8 +194,8 @@ const WatchPage = () => {
 
 							<ChevronRight
 								className='absolute top-1/2 -translate-y-1/2 right-2 w-8 h-8
-										opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer
-										 bg-red-600 text-white rounded-full'
+									opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer
+									bg-red-600 text-white rounded-full'
 								onClick={scrollRight}
 							/>
 							<ChevronLeft
@@ -226,4 +211,5 @@ const WatchPage = () => {
 		</div>
 	);
 };
+
 export default WatchPage;
